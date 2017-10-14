@@ -51,7 +51,6 @@ public class PageTurnView extends View {
     }
 
     {
-        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.maps);
         animStep1.setDuration(2500);
         animStep2.setDuration(2500);
         animStep3.setDuration(2500);
