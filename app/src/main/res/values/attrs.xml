@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PraiseButton">
+        <attr name="text" format="integer|reference" />
+        <attr name="textColor" format="color|reference" />
+        <attr name="textSize" format="dimension|reference" />
+        <attr name="rippleColor" format="color|reference" />
+        <attr name="checked" format="boolean|reference" />
+    </declare-styleable>
+
+</resources>
