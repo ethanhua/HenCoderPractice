@@ -280,17 +280,17 @@ public class PraiseButton extends View {
         int oldNumLength = oldNumStr.length();
         int newNumLength = newNumStr.length();
         if (oldNumLength != newNumLength) {  //如果发生进位或者退位 则num全部是滚动部分
-            mNumPart[0] = "";
-            mNumPart[1] = oldNumStr;
-            mNumPart[2] = newNumStr;
+            mNumPart[NUM_PART_FIXED] = "";
+            mNumPart[NUM_PART_ROLL_OLD] = oldNumStr;
+            mNumPart[NUM_PART_ROLL_NEW] = newNumStr;
             return;
         }
         //如果变化前后数字长度相同，则从高位开始比较，到哪一位数字不同，则这一位前面的部分为固定部分，后面（包含自己）为滚动部分
         for (int i = 0; i < oldNumLength; i++) {
             if (newNumStr.charAt(i) != oldNumStr.charAt(i)) {
-                mNumPart[0] = oldNumStr.substring(0, i);
-                mNumPart[1] = oldNumStr.substring(i);
-                mNumPart[2] = newNumStr.substring(i);
+                mNumPart[NUM_PART_FIXED] = oldNumStr.substring(0, i);
+                mNumPart[NUM_PART_ROLL_OLD] = oldNumStr.substring(i);
+                mNumPart[NUM_PART_ROLL_NEW] = newNumStr.substring(i);
                 break;
             }
         }
