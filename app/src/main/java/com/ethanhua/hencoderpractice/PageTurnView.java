@@ -51,9 +51,9 @@ public class PageTurnView extends View {
     }
 
     {
-        animStep1.setDuration(2500);
-        animStep2.setDuration(2500);
-        animStep3.setDuration(2500);
+        animStep1.setDuration(1500);
+        animStep2.setDuration(1500);
+        animStep3.setDuration(1500);
     }
 
     @Override
