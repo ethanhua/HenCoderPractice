@@ -8,4 +8,4 @@
 
 apk下载  
 
-![](screenshots/qrcode.gif)
+![](screenshots/qrcode.png)
