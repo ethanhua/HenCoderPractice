@@ -6,16 +6,17 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     tools:context="com.ethanhua.hencoderpractice.MainActivity">
+
     <com.ethanhua.hencoderpractice.PageTurnView
         android:id="@+id/pageTurnView"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
         android:layout_marginTop="20dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp" />
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.ethanhua.hencoderpractice.PraiseButton
-        app:layout_constraintTop_toBottomOf="@+id/pageTurnView"
         android:id="@+id/btn_praise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,9 +26,31 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pageTurnView"
         app:layout_constraintTop_toTopOf="parent"
         app:text="199"
         app:textColor="@color/colorGray"
         app:textSize="14sp" />
 
+    <EditText
+        android:id="@+id/edit_praiseNum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:inputType="number"
+        android:hint="请输入点赞初始数值"
+        android:textSize="14sp"
+        android:textColorHint="@color/colorWhite"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_praise" />
+
+    <Button
+        android:id="@+id/btn_apply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="应用"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_praiseNum" />
 </android.support.constraint.ConstraintLayout>

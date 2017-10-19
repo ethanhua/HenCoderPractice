@@ -1,11 +1,6 @@
 
 # HenCoderPractice
 
-FlipBoard 红板报的翻页效果  
+预览图（图有些卡，可以下载代码运行apk看效果）  
 
-
-![img](screenshots/page.gif)
-
-即刻 点赞效果
-
-![img](screenshots/praisebtn.gif)
+![img](screenshots/01.gif)

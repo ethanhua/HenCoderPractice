@@ -3,7 +3,6 @@ package com.ethanhua.hencoderpractice;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -11,7 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.os.Build;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
@@ -77,12 +75,7 @@ public class PraiseButton extends View {
     }
 
     public PraiseButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public PraiseButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+        super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
     }
 
@@ -99,9 +92,7 @@ public class PraiseButton extends View {
         mTextPaint.setStrokeWidth(4);
 
 
-        mNumPart[NUM_PART_FIXED] = "";
-        mNumPart[NUM_PART_ROLL_OLD] = String.valueOf(mNumber);
-        mNumPart[NUM_PART_ROLL_NEW] = "";
+        initNumPart();
         measureNumberText();
         measurePraiseBitmap();
     }
@@ -113,6 +104,12 @@ public class PraiseButton extends View {
         mUnSelectBmpY = getDefaultHeight() / 2 - unSelectBitmap.getHeight() / 2;
         mShiningBmpX = selectBitmap.getWidth() / 2 - shiningBitmap.getWidth() / 2;
         mShiningBmpY = mSelectBmpY - shiningBitmap.getHeight() / 2;
+    }
+
+    private void initNumPart() {
+        mNumPart[NUM_PART_FIXED] = "";
+        mNumPart[NUM_PART_ROLL_OLD] = String.valueOf(mNumber);
+        mNumPart[NUM_PART_ROLL_NEW] = String.valueOf(mNumber);
     }
 
     @Override
@@ -205,9 +202,14 @@ public class PraiseButton extends View {
         if (mNumber == number) {
             return;
         }
+        int temp = mNumber;
         mNumber = number;
-        splitNumToFixedAndRollPart(mChecked ? 1 : -1);
-        invalidate();
+        initNumPart();
+        if (String.valueOf(temp).length() != String.valueOf(mNumber).length()) {
+            requestLayout();
+        } else {
+            invalidate();
+        }
     }
 
     public void setTextOffYScale(float scale) {
