@@ -19,6 +19,8 @@ import static android.graphics.BitmapFactory.decodeResource;
 
 /**
  * Created by ethanhua on 2017/10/14.
+ *
+ * 此view暂时将图标写死在代码里面，更好的方式是点赞图标和滚动数字分开成两个单独的view
  */
 
 public class PraiseButton extends View {
@@ -40,17 +42,17 @@ public class PraiseButton extends View {
     private boolean mChecked = false;
 
     private final Matrix matrix = new Matrix();
-    private final Bitmap unSelectBitmap = decodeResource(getResources(), R.drawable.ic_messages_like_unselected);
-    private final Bitmap selectBitmap = decodeResource(getResources(), R.drawable.ic_messages_like_selected);
-    private final Bitmap shiningBitmap = decodeResource(getResources(), R.drawable.ic_messages_like_selected_shining);
+    private final Bitmap mUnSelectBmp = decodeResource(getResources(), R.drawable.ic_like_unselected);
+    private final Bitmap mSelectBmp = decodeResource(getResources(), R.drawable.ic_like_selected);
+    private final Bitmap mShiningBmp = decodeResource(getResources(), R.drawable.ic_shining);
 
-    private float praiseIconScale = 1;
-    private float shiningIconScale = 1;
+    private float praiseScale = 1;
+    private float shiningScale = 1;
     private float rippleScale = 1;
     private float textOffYScale = 0;
     private final ObjectAnimator mTextRollAnim = ObjectAnimator.ofFloat(this, "textOffYScale", 0, 1f);
-    private final ObjectAnimator mPraiseIconScaleAnim = ObjectAnimator.ofFloat(this, "praiseIconScale", 0.80f, 1.08f, 1f);
-    private final ObjectAnimator mShiningIconScaleAnim = ObjectAnimator.ofFloat(this, "shiningIconScale", 0f, 1.1f, 1f);
+    private final ObjectAnimator mPraiseScaleAnim = ObjectAnimator.ofFloat(this, "praiseScale", 0.8f, 1.08f, 1f);
+    private final ObjectAnimator mShiningScaleAnim = ObjectAnimator.ofFloat(this, "shiningScale", 0, 1.1f, 1f);
     private final ObjectAnimator mRippleScaleAnim = ObjectAnimator.ofFloat(this, "rippleScale", 1f, 3f);
 
     private final String[] mNumPart = new String[3];
@@ -87,11 +89,10 @@ public class PraiseButton extends View {
         mRippleColor = a.getColor(R.styleable.PraiseButton_rippleColor, mRippleColor);
         mChecked = a.getBoolean(R.styleable.PraiseButton_checked, mChecked);
         a.recycle();
+
         mTextPaint.setTextSize(mTextSize);
         mTextPaint.setColor(mTextColor);
         mTextPaint.setStrokeWidth(4);
-
-
         initNumPart();
         measureNumberText();
         measurePraiseBitmap();
@@ -99,11 +100,11 @@ public class PraiseButton extends View {
 
     private void measurePraiseBitmap() {
         mSelectBmpX = 0;
-        mSelectBmpY = getDefaultHeight() / 2 - selectBitmap.getHeight() / 2;
+        mSelectBmpY = getDefaultHeight() / 2 - mSelectBmp.getHeight() / 2;
         mUnSelectBmpX = 0;
-        mUnSelectBmpY = getDefaultHeight() / 2 - unSelectBitmap.getHeight() / 2;
-        mShiningBmpX = selectBitmap.getWidth() / 2 - shiningBitmap.getWidth() / 2;
-        mShiningBmpY = mSelectBmpY - shiningBitmap.getHeight() / 2;
+        mUnSelectBmpY = getDefaultHeight() / 2 - mUnSelectBmp.getHeight() / 2;
+        mShiningBmpX = mSelectBmp.getWidth() / 2 - mShiningBmp.getWidth() / 2;
+        mShiningBmpY = mSelectBmpY - mShiningBmp.getHeight() / 2;
     }
 
     private void initNumPart() {
@@ -126,18 +127,18 @@ public class PraiseButton extends View {
         if (mChecked) {
             matrix.reset();
             matrix.setTranslate(mSelectBmpX, mSelectBmpY);
-            matrix.postScale(praiseIconScale, praiseIconScale, selectBitmap.getWidth() / 2, selectBitmap.getHeight() / 2);
-            canvas.drawBitmap(selectBitmap, matrix, mPaint);
+            matrix.postScale(praiseScale, praiseScale, mSelectBmp.getWidth() / 2, mSelectBmp.getHeight() / 2);
+            canvas.drawBitmap(mSelectBmp, matrix, mPaint);
             //绘制点赞图标上方的闪光icon
             matrix.reset();
             matrix.setTranslate(mShiningBmpX, mShiningBmpY);
-            matrix.postScale(shiningIconScale, shiningIconScale, shiningBitmap.getWidth() / 2, shiningBitmap.getHeight() / 2);
-            canvas.drawBitmap(shiningBitmap, matrix, mPaint);
+            matrix.postScale(shiningScale, shiningScale, mShiningBmp.getWidth() / 2, mShiningBmp.getHeight() / 2);
+            canvas.drawBitmap(mShiningBmp, matrix, mPaint);
         } else {
             matrix.reset();
             matrix.setTranslate(mUnSelectBmpX, mUnSelectBmpY);
-            matrix.postScale(praiseIconScale, praiseIconScale, unSelectBitmap.getWidth() / 2, unSelectBitmap.getHeight() / 2);
-            canvas.drawBitmap(unSelectBitmap, matrix, mPaint);
+            matrix.postScale(praiseScale, praiseScale, mUnSelectBmp.getWidth() / 2, mUnSelectBmp.getHeight() / 2);
+            canvas.drawBitmap(mUnSelectBmp, matrix, mPaint);
         }
         canvas.restore();
     }
@@ -150,7 +151,10 @@ public class PraiseButton extends View {
             mPaint.setStrokeWidth(6);
             mPaint.setAntiAlias(true);
             mPaint.setStyle(Paint.Style.STROKE);
-            canvas.drawCircle(selectBitmap.getWidth() / 2, getHeight() / 2, rippleScale * selectBitmap.getWidth() / 2 - 6, mPaint);
+            canvas.drawCircle(mSelectBmpX + mSelectBmp.getWidth() / 2,
+                    mSelectBmpY + mSelectBmp.getHeight() / 2,
+                    rippleScale * mSelectBmp.getWidth() / 2 - 6,
+                    mPaint);
             mPaint.reset();
             canvas.restore();
         }
@@ -170,9 +174,9 @@ public class PraiseButton extends View {
 
     private float offX(boolean isFix) {
         if (isFix) {
-            return mSpace + selectBitmap.getWidth();
+            return mSpace + mSelectBmp.getWidth();
         }
-        return mSpace + selectBitmap.getWidth() + mTextPaint.measureText(mNumPart[NUM_PART_FIXED]);
+        return mSpace + mSelectBmp.getWidth() + mTextPaint.measureText(mNumPart[NUM_PART_FIXED]);
     }
 
     public void setChecked(boolean checked) {
@@ -183,9 +187,9 @@ public class PraiseButton extends View {
         textOffYScale = 0;
         mIsRolling = true;
         splitNumToFixedAndRollPart(mChecked ? 1 : -1);
-        mPraiseIconScaleAnim.start();
+        mPraiseScaleAnim.start();
         if (mChecked) {
-            mShiningIconScaleAnim.start();
+            mShiningScaleAnim.start();
             mRippleScaleAnim.start();
         }
         mTextRollAnim.start();
@@ -217,13 +221,13 @@ public class PraiseButton extends View {
         invalidate();
     }
 
-    public void setPraiseIconScale(float praiseIconScale) {
-        this.praiseIconScale = praiseIconScale;
+    public void setPraiseScale(float praiseScale) {
+        this.praiseScale = praiseScale;
         invalidate();
     }
 
-    public void setShiningIconScale(float scale) {
-        this.shiningIconScale = scale;
+    public void setShiningScale(float scale) {
+        this.shiningScale = scale;
         invalidate();
     }
 
@@ -246,8 +250,8 @@ public class PraiseButton extends View {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mTextRollAnim.end();
-        mPraiseIconScaleAnim.end();
-        mShiningIconScaleAnim.end();
+        mPraiseScaleAnim.end();
+        mShiningScaleAnim.end();
         mRippleScaleAnim.end();
     }
 
@@ -268,11 +272,11 @@ public class PraiseButton extends View {
     }
 
     private int getDefaultWidth() {
-        return (int) (mTextPaint.measureText(mNumber + "0") + 2 * mSpace + selectBitmap.getWidth());
+        return (int) (mTextPaint.measureText(mNumber + "0") + 2 * mSpace + mSelectBmp.getWidth());
     }
 
     private int getDefaultHeight() {
-        return (int) (Math.max(selectBitmap.getHeight() + shiningBitmap.getHeight(), mTextHeight) + 2 * mSpace);
+        return (int) (Math.max(mSelectBmp.getHeight() + mShiningBmp.getHeight(), mTextHeight) + 2 * mSpace);
     }
 
     private void splitNumToFixedAndRollPart(int add) {
@@ -281,7 +285,8 @@ public class PraiseButton extends View {
         mNumber = mNumber + add;
         int oldNumLength = oldNumStr.length();
         int newNumLength = newNumStr.length();
-        if (oldNumLength != newNumLength) {  //如果发生进位或者退位 则num全部是滚动部分
+        //如果发生进位或者退位 则num全部是滚动部分
+        if (oldNumLength != newNumLength) {
             mNumPart[NUM_PART_FIXED] = "";
             mNumPart[NUM_PART_ROLL_OLD] = oldNumStr;
             mNumPart[NUM_PART_ROLL_NEW] = newNumStr;

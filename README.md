@@ -1,11 +1,10 @@
 
-# HenCoderPractice
+# [HenCoderPractice](http://hencoder.com/)
 
 预览图  
   
-
-![img](screenshots/01.gif)
+![img](screenshots/001.gif)
 
 apk下载  
 
-![](screenshots/qrcode.gif)
+![](screenshots/qrcode.png)

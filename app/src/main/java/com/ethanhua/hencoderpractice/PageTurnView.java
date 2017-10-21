@@ -17,18 +17,24 @@ import android.view.View;
 
 /**
  * Created by ethanhua on 2017/10/14.
+ *
+ * 整个动画分3部分
+ *
+ * 1 将坐标系沿Y轴3D旋转-45的动画
+ * 2 将坐标系沿着 3D轴线Y 2D旋转后形成的新轴线 3D旋转-45投影的动画
+ * 3 将坐标系沿Y轴3D旋转45的动画
  */
 
 public class PageTurnView extends View {
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.maps);
     private Camera camera = new Camera();
-    private int degreeY1 = 0;
+    private int degree3DY1 = 0;
     private int degreeZ = 0;
-    private int degreeY2 = 0;
-    private ObjectAnimator animStep1 = ObjectAnimator.ofInt(this, "degreeY1", 0, -45);
+    private int degree3DY2 = 0;
+    private ObjectAnimator animStep1 = ObjectAnimator.ofInt(this, "degree3DY1", 0, -45);
     private ObjectAnimator animStep2 = ObjectAnimator.ofInt(this, "degreeZ", 0, 270);
-    private ObjectAnimator animStep3 = ObjectAnimator.ofInt(this, "degreeY2", 0, 45);
+    private ObjectAnimator animStep3 = ObjectAnimator.ofInt(this, "degree3DY2", 0, 45);
     private AnimatorSet animatorSet = new AnimatorSet();
 
     public PageTurnView(Context context) {
@@ -80,65 +86,68 @@ public class PageTurnView extends View {
         invalidate();
     }
 
-    public void setDegreeY1(int degreeY) {
-        this.degreeY1 = degreeY;
+    public void setDegree3DY1(int degreeY) {
+        this.degree3DY1 = degreeY;
         invalidate();
     }
 
-    public void setDegreeY2(int degreeY) {
-        this.degreeY2 = degreeY;
+    public void setDegree3DY2(int degreeY) {
+        this.degree3DY2 = degreeY;
         invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        int bitmapWidth = bitmap.getWidth();
-        int bitmapHeight = bitmap.getHeight();
-        int centerX = getWidth() / 2;
-        int centerY = getHeight() / 2;
-        int x = centerX - bitmapWidth / 2;
-        int y = centerY - bitmapHeight / 2;
+        int bmpWidth = bitmap.getWidth();
+        int bmpHeight = bitmap.getHeight();
+
+        //将画布坐标系平移至View中心
+        canvas.translate(getWidth() / 2, getHeight() / 2);
 
 
-        // 第一部分绘制：初始状态时 左半边部分（第三段动画时有3D旋转）
+        //绘制初始位置右半边
+
+
         canvas.save();
-        canvas.rotate(-degreeZ, centerX, centerY); //最后旋转回来
-
+        //1 对坐标系先2D旋转
+        canvas.rotate(-degreeZ);
+        //2 对坐标系进行3D绕Y轴旋转
         camera.save();
-        camera.rotateY(degreeY2);       //再3D变换
-        canvas.translate(centerX, centerY);
+        camera.rotateY(degree3DY1);
         camera.applyToCanvas(canvas);
-        canvas.translate(-centerX, -centerY);
+        //3 裁切
+        canvas.clipRect(0, -bmpHeight, bmpWidth, bmpHeight);
+        //4 恢复2D旋转
+        canvas.rotate(degreeZ);
+        //5 绘制图形
+        canvas.drawBitmap(bitmap, -bmpWidth / 2, -bmpHeight / 2, paint);
         camera.restore();
-
-        canvas.clipRect(0, 0, x + bitmapWidth / 2, centerY * 2); //再裁切
-        canvas.rotate(degreeZ, centerX, centerY); //先旋转
-        canvas.drawBitmap(bitmap, x, y, paint);
         canvas.restore();
 
+        //绘制初始位置左半边
 
-        // 第二部分绘制：初始状态时 右半边部分 (第一段动画时有3D旋转并保持3D旋转角度到最后)
         canvas.save();
-        canvas.rotate(-degreeZ, centerX, centerY); //最后旋转回来
-
+        //1 对坐标系先2D旋转
+        canvas.rotate(-degreeZ);
+        //2 对坐标系进行3D绕Y轴旋转
         camera.save();
-        camera.rotateY(degreeY1);       //再3D变换
-        canvas.translate(centerX, centerY);
+        camera.rotateY(degree3DY2);
         camera.applyToCanvas(canvas);
-        canvas.translate(-centerX, -centerY);
+        //3 裁切
+        canvas.clipRect(-bmpWidth, -bmpHeight, 0, bmpHeight);
+        //4 恢复2D旋转
+        canvas.rotate(degreeZ);
+        //5 绘制图形
+        canvas.drawBitmap(bitmap, -bmpWidth / 2, -bmpHeight / 2, paint);
         camera.restore();
-
-        canvas.clipRect(x + bitmapWidth / 2, 0, centerX * 2, centerY * 2); //再裁切
-        canvas.rotate(degreeZ, centerX, centerY); //先旋转
-
-        canvas.drawBitmap(bitmap, x, y, paint);
         canvas.restore();
+
     }
 
     private void reset() {
-        degreeY1 = 0;
+        degree3DY1 = 0;
         degreeZ = 0;
-        degreeY2 = 0;
+        degree3DY2 = 0;
     }
 }
