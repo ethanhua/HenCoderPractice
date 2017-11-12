@@ -19,8 +19,8 @@ public class SecondaryActivity extends AppCompatActivity {
     public void onBackPressed() {
         SplitAnimationUtil.prepareBackAnimation(this);
         finish();
-        overridePendingTransition(0, 0);
         SplitAnimationUtil.backAnimate(1000);
+        overridePendingTransition(0, 0);
     }
 
 }

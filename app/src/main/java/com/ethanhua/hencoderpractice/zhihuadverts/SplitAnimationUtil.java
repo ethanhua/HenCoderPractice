@@ -115,6 +115,13 @@ public class SplitAnimationUtil {
         });
     }
 
+
+    public static void animBack(final Activity activity,
+                                final int duration){
+        prepareAnimation(activity);
+        backAnimate(duration);
+    }
+
     public static void backAnimate(final int duration,
                                    final TimeInterpolator interpolator) {
         new Handler().post(new Runnable() {

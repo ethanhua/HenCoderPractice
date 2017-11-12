@@ -28,7 +28,7 @@ public class FirstActivity extends AppCompatActivity {
         for (int i = 0; i < 14; i++) {
             NewsModel newsModel = new NewsModel();
             newsModel.type = NewsModel.TYPE_NEWS;
-            if (i == 3) {
+            if (i == 5) {
                 newsModel.type = NewsModel.TYPE_ADVERTS;
 
             }

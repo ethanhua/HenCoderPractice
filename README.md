@@ -7,5 +7,5 @@
 
 apk下载    
 
-![](screenshots/qrcode1.png)
+![](screenshots/qrcode2.png)
 
