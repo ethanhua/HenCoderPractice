@@ -25,6 +25,8 @@ import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
+import java.lang.ref.WeakReference;
+
 import static android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN;
 
 /**
@@ -38,6 +40,8 @@ public class SplitAnimationUtil {
     private static ImageView mTopImage;
     private static ImageView mBottomImage;
     private static AnimatorSet mSetAnim;
+    private static WeakReference<Activity> firstActivity;
+    private static ImageView mBackHolderImage;
 
     public static void startActivity(Activity currActivity,
                                      Intent intent,
@@ -45,6 +49,7 @@ public class SplitAnimationUtil {
                                      int splitYBottom) {
 
         // Preparing the bitmaps that we need to show
+        firstActivity = new WeakReference<Activity>(currActivity);
         prepare(currActivity, splitYTop, splitYBottom);
         currActivity.startActivity(intent);
         currActivity.overridePendingTransition(0, 0);
@@ -53,6 +58,18 @@ public class SplitAnimationUtil {
     public static void prepareAnimation(final Activity destActivity) {
         mTopImage = createImageView(destActivity, mBitmap, mLoc1);
         mBottomImage = createImageView(destActivity, mBitmap, mLoc2);
+    }
+
+    public static void prepareBackAnimation(Activity destActivity) {
+        if (firstActivity.get() == null) {
+            return;
+        }
+        Bitmap bmp = screenShot(destActivity, false);
+        int[] loc = new int[]{0, bmp.getHeight()};
+        mBackHolderImage = createImageView(firstActivity.get(), bmp, loc);
+        mTopImage = createImageView(firstActivity.get(), mBitmap, mLoc1);
+        mBottomImage = createImageView(firstActivity.get(), mBitmap, mLoc2);
+
     }
 
     public static void animate(final Activity destActivity,
@@ -98,8 +115,7 @@ public class SplitAnimationUtil {
         });
     }
 
-    public static void backAnimate(final Activity destActivity,
-                                   final int duration,
+    public static void backAnimate(final int duration,
                                    final TimeInterpolator interpolator) {
         new Handler().post(new Runnable() {
 
@@ -111,15 +127,13 @@ public class SplitAnimationUtil {
                 mSetAnim.addListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationCancel(Animator animation) {
-                        clean(destActivity);
+                        clean(firstActivity.get());
                     }
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        clean(destActivity);
-                        destActivity.finish();
-                        destActivity.overridePendingTransition(0, 0);
-                        mBitmap = null;
+                        clean(firstActivity.get());
+                        firstActivity.clear();
                     }
                 });
                 // Animating the 2 parts away from each other
@@ -143,8 +157,8 @@ public class SplitAnimationUtil {
         });
     }
 
-    public static void backAnimate(final Activity destActivity, final int duration) {
-        backAnimate(destActivity, duration, new DecelerateInterpolator());
+    public static void backAnimate(final int duration) {
+        backAnimate(duration, new DecelerateInterpolator());
 
     }
 
@@ -160,6 +174,13 @@ public class SplitAnimationUtil {
     }
 
     private static void clean(Activity activity) {
+        if (mBackHolderImage != null) {
+            mBackHolderImage.setLayerType(View.LAYER_TYPE_NONE, null);
+            try {
+                activity.getWindowManager().removeViewImmediate(mBackHolderImage);
+            } catch (Exception ignored) {
+            }
+        }
         if (mTopImage != null) {
             mTopImage.setLayerType(View.LAYER_TYPE_NONE, null);
             try {
